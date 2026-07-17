@@ -1,0 +1,5 @@
+# built binary
+/k3d-router
+
+# goreleaser output
+/dist/
