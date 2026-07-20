@@ -62,3 +62,59 @@ jobs:
         run: |
           go mod tidy
           git diff --exit-code -- go.mod go.sum
+
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7.0.0
+      - uses: actions/setup-go@v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Install k3d and kubectl
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+          curl -fsSL -o kubectl "https://dl.k8s.io/release/$(curl -fsSL https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+          sudo install -m 0755 kubectl /usr/local/bin/kubectl
+      - name: Create k3d cluster
+        run: k3d cluster create integration-test --wait
+      - name: Apply Host CRD and a Host resource
+        run: |
+          kubectl apply -f - <<'EOF'
+          apiVersion: apiextensions.k8s.io/v1
+          kind: CustomResourceDefinition
+          metadata:
+            name: hosts.getambassador.io
+          spec:
+            group: getambassador.io
+            scope: Namespaced
+            names:
+              plural: hosts
+              singular: host
+              kind: Host
+            versions:
+              - name: v3alpha1
+                served: true
+                storage: true
+                schema:
+                  openAPIV3Schema:
+                    type: object
+                    x-kubernetes-preserve-unknown-fields: true
+          EOF
+          kubectl wait --for=condition=established --timeout=60s crd/hosts.getambassador.io
+          kubectl apply -f - <<'EOF'
+          apiVersion: getambassador.io/v3alpha1
+          kind: Host
+          metadata:
+            name: integration-test-host
+            namespace: default
+          spec:
+            hostname: app.integration-test.example
+          EOF
+      - name: Integration tests
+        env:
+          IT_K3D_CLUSTER: integration-test
+          IT_K3D_HOSTNAME: app.integration-test.example
+        run: go test -tags=integration -v ./internal/engine ./internal/router
+      - name: Clean up cluster
+        if: always()
+        run: k3d cluster delete integration-test || true

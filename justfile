@@ -23,6 +23,10 @@ vet:
 test:
     go test ./...
 
+[doc("Run integration tests (needs Docker; k3d tier needs IT_K3D_CLUSTER + IT_K3D_HOSTNAME)")]
+test-integration:
+    go test -tags=integration ./internal/engine ./internal/router
+
 [doc("Vet + test")]
 check: vet test
 
