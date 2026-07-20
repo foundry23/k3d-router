@@ -33,11 +33,10 @@ changelog:
 release:
   draft: false
 
-brews:
+homebrew_casks:
   - repository:
       owner: foundry23
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     homepage: "https://github.com/foundry23/k3d-router"
     description: "A shared local reverse proxy for k3d clusters"
-    license: MIT
