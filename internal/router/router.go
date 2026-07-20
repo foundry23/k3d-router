@@ -47,7 +47,7 @@ func Reconcile(ctx context.Context, s Settings, staticConfig []byte, w io.Writer
 	if err != nil {
 		return err
 	}
-	defer cli.Close()
+	defer func() { _ = cli.Close() }()
 
 	dynamicDir := filepath.Join(s.ConfigDir, "dynamic")
 	if err := os.MkdirAll(dynamicDir, 0o755); err != nil {
@@ -177,7 +177,7 @@ func Down(ctx context.Context, s Settings) error {
 	if err != nil {
 		return err
 	}
-	defer cli.Close()
+	defer func() { _ = cli.Close() }()
 	return cli.RemoveContainer(ctx, s.Container)
 }
 
@@ -186,7 +186,7 @@ func Status(ctx context.Context, s Settings, w io.Writer) error {
 	if err != nil {
 		return err
 	}
-	defer cli.Close()
+	defer func() { _ = cli.Close() }()
 
 	info, exists, err := cli.InspectContainer(ctx, s.Container)
 	if err != nil {
@@ -220,7 +220,7 @@ func Logs(ctx context.Context, s Settings) error {
 	if err != nil {
 		return err
 	}
-	defer cli.Close()
+	defer func() { _ = cli.Close() }()
 	return cli.Logs(ctx, s.Container)
 }
 
@@ -233,7 +233,7 @@ func Watch(ctx context.Context, s Settings, staticConfig []byte, w io.Writer) er
 	if err != nil {
 		return err
 	}
-	defer cli.Close()
+	defer func() { _ = cli.Close() }()
 
 	signals, errs := cli.ClusterEvents(ctx)
 	fmt.Fprintln(w, "Watching for cluster changes (Ctrl-C to stop)...")

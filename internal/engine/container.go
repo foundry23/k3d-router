@@ -99,7 +99,7 @@ func (c *Client) Logs(ctx context.Context, name string) error {
 	if err != nil {
 		return err
 	}
-	defer reader.Close()
+	defer func() { _ = reader.Close() }()
 	_, err = stdcopy.StdCopy(os.Stdout, os.Stderr, reader)
 	return err
 }
