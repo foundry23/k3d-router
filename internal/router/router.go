@@ -225,15 +225,18 @@ func Logs(ctx context.Context, s Settings) error {
 }
 
 func Watch(ctx context.Context, s Settings, staticConfig []byte, w io.Writer) error {
-	if err := Reconcile(ctx, s, staticConfig, w); err != nil {
-		return err
-	}
-
-	cli, err := engine.New(ctx)
+	cli, err := waitForEngine(ctx, w)
 	if err != nil {
+		if ctx.Err() != nil {
+			return nil
+		}
 		return err
 	}
 	defer func() { _ = cli.Close() }()
+
+	if err := Reconcile(ctx, s, staticConfig, w); err != nil {
+		return err
+	}
 
 	signals, errs := cli.ClusterEvents(ctx)
 	fmt.Fprintln(w, "Watching for cluster changes (Ctrl-C to stop)...")
@@ -258,6 +261,41 @@ func Watch(ctx context.Context, s Settings, staticConfig []byte, w io.Writer) er
 			fmt.Fprintln(w, "cluster change detected — reconciling")
 			if err := Reconcile(ctx, s, staticConfig, w); err != nil {
 				slog.Error("reconcile failed", "err", err)
+			}
+		}
+	}
+}
+
+const (
+	engineWaitTimeout  = time.Minute
+	engineWaitInterval = 2 * time.Second
+)
+
+func waitForEngine(ctx context.Context, w io.Writer) (*engine.Client, error) {
+	cli, err := engine.New(ctx)
+	if err == nil {
+		return cli, nil
+	}
+	fmt.Fprintf(w, "Waiting up to %s for the Docker engine\n", engineWaitTimeout)
+
+	deadline := time.NewTimer(engineWaitTimeout)
+	defer deadline.Stop()
+	ticker := time.NewTicker(engineWaitInterval)
+	defer ticker.Stop()
+
+	for {
+		select {
+		case <-ctx.Done():
+			fmt.Fprintln(w)
+			return nil, ctx.Err()
+		case <-deadline.C:
+			fmt.Fprintln(w)
+			return nil, fmt.Errorf("docker engine not reachable after %s: %w", engineWaitTimeout, err)
+		case <-ticker.C:
+			fmt.Fprint(w, ".")
+			if cli, err = engine.New(ctx); err == nil {
+				fmt.Fprintln(w, " connected")
+				return cli, nil
 			}
 		}
 	}
