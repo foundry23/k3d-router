@@ -33,10 +33,17 @@ changelog:
 release:
   draft: false
 
-homebrew_casks:
+brews:
   - repository:
       owner: foundry23
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     homepage: "https://github.com/foundry23/k3d-router"
     description: "A shared local reverse proxy for k3d clusters"
+    license: MIT
+    caveats: "k3d-router talks to your Docker engine — make sure Docker/OrbStack is running."
+    service: |
+      run [opt_bin/"k3d-router", "watch"]
+      keep_alive true
+      log_path var/"log/k3d-router.log"
+      error_log_path var/"log/k3d-router.log"
