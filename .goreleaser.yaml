@@ -38,10 +38,11 @@ brews:
       owner: foundry23
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    directory: Formula
     homepage: "https://github.com/foundry23/k3d-router"
     description: "A shared local reverse proxy for k3d clusters"
     license: MIT
-    caveats: "k3d-router talks to your Docker engine — make sure Docker/OrbStack is running."
+    caveats: "k3d-router requires your docker engine to be running."
     service: |
       run [opt_bin/"k3d-router", "watch"]
       keep_alive true
