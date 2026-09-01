@@ -8,9 +8,9 @@ require (
 	github.com/docker/go-sdk/container v0.1.0-alpha016
 	github.com/moby/moby/api v1.55.0
 	github.com/moby/moby/client v0.5.1
-	github.com/urfave/cli/v3 v3.10.1
-	k8s.io/apimachinery v0.36.3
-	k8s.io/client-go v0.36.3
+	github.com/urfave/cli/v3 v3.11.0
+	k8s.io/apimachinery v0.36.4
+	k8s.io/client-go v0.36.4
 	sigs.k8s.io/yaml v1.6.0
 )
 
