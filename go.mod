@@ -1,16 +1,16 @@
 module github.com/foundry23/k3d-router
 
-go 1.26.0
+go 1.27.0
 
 require (
 	github.com/containerd/errdefs v1.0.0
-	github.com/docker/go-sdk/client v0.1.0-alpha013
-	github.com/docker/go-sdk/container v0.1.0-alpha016
+	github.com/docker/go-sdk/client v0.1.0-alpha014
+	github.com/docker/go-sdk/container v0.1.0-alpha017
 	github.com/moby/moby/api v1.56.1
 	github.com/moby/moby/client v0.6.2
 	github.com/urfave/cli/v3 v3.14.0
-	k8s.io/apimachinery v0.37.1
-	k8s.io/client-go v0.37.1
+	k8s.io/apimachinery v0.37.2
+	k8s.io/client-go v0.37.2
 	sigs.k8s.io/yaml v1.6.0
 )
 
@@ -26,10 +26,10 @@ require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/distribution/reference v0.6.0 // indirect
 	github.com/docker/go-connections v0.8.2 // indirect
-	github.com/docker/go-sdk/config v0.1.0-alpha013 // indirect
-	github.com/docker/go-sdk/context v0.1.0-alpha013 // indirect
-	github.com/docker/go-sdk/image v0.1.0-alpha015 // indirect
-	github.com/docker/go-sdk/network v0.1.0-alpha013 // indirect
+	github.com/docker/go-sdk/config v0.1.0-alpha014 // indirect
+	github.com/docker/go-sdk/context v0.1.0-alpha014 // indirect
+	github.com/docker/go-sdk/image v0.1.0-alpha016 // indirect
+	github.com/docker/go-sdk/network v0.1.0-alpha014 // indirect
 	github.com/docker/go-units v0.5.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.1 // indirect
